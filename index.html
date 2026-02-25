@@ -2,51 +2,51 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Community Map – Wieselgrensplatsen</title>
+  <title>Community Map</title>
 
-  <!-- Leaflet CSS -->
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
   />
 
   <style>
-    body { margin: 0; }
-    #map { height: 100vh; width: 100%; }
+    body { margin: 0; font-family: sans-serif; }
+    #map { height: 60vh; }
+    form { padding: 1rem; }
+    textarea, select, button { display: block; width: 100%; margin: 0.5rem 0; }
   </style>
 </head>
 <body>
 
   <div id="map"></div>
 
-  <!-- Leaflet JS -->
+  <form id="mapForm">
+    <textarea
+      id="text"
+      placeholder="What should someone notice here?"
+      required
+    ></textarea>
+
+    <select id="layer" required>
+      <option value="">Choose a layer</option>
+      <option value="memories">Lost Memories</option>
+      <option value="everyday">Everyday Experiences</option>
+      <option value="social">Social Spots</option>
+    </select>
+
+    <label>
+      <input type="checkbox" id="approximate">
+      This location is approximate
+    </label>
+
+    <button type="submit">Add to map</button>
+  </form>
+
+  <!-- Libraries -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-<script>
-  const map = L.map('map').setView([57.7204, 11.9442], 15);
-
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap contributors'
-  }).addTo(map);
-
-  let marker = null;
-
-  function onMapClick(e) {
-    const { lat, lng } = e.latlng;
-
-    // If marker already exists, move it
-    if (marker) {
-      marker.setLatLng([lat, lng]);
-    } else {
-      marker = L.marker([lat, lng], { draggable: true }).addTo(map);
-    }
-
-    console.log("Latitude:", lat);
-    console.log("Longitude:", lng);
-  }
-
-  map.on('click', onMapClick);
-</script>
+  <!-- Your frontend code -->
+  <script src="main.js"></script>
 
 </body>
 </html>
