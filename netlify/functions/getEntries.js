@@ -1,34 +1,32 @@
-export async function handler() {
-  const BASE_ID = "appsWnWbbt04jYhN1";
-  const TABLE_NAME = "Entries";
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
-  const url =
-    `https://api.airtable.com/v0/${BASE_ID}/${TABLE_NAME}` +
-    `?filterByFormula=${encodeURIComponent("{Status}='Approved'")}`;
+exports.handler = async function() {
+  const AIRTABLE_BASE = "appsWnWbbt04jYhN1";
+  const AIRTABLE_TABLE = "Entries";
+  const AIRTABLE_TOKEN = process.env.AIRTABLE_TOKEN;
 
   try {
-    const response = await fetch(url, {
-      headers: {
-        Authorization: `Bearer ${process.env.AIRTABLE_TOKEN}`,
-        "Content-Type": "application/json"
+    const resp = await fetch(
+      `https://api.airtable.com/v0/${AIRTABLE_BASE}/${AIRTABLE_TABLE}?view=Grid%20view`,
+      {
+        headers: { Authorization: `Bearer ${AIRTABLE_TOKEN}` }
       }
-    });
+    );
 
-    const data = await response.json();
+    const result = await resp.json();
+
+    // Only send entries with Status = Approved
+    const approved = result.records.filter(r => r.fields.Status === "Approved");
 
     return {
       statusCode: 200,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(data.records)
+      body: JSON.stringify({ entries: approved })
     };
 
-  } catch (error) {
+  } catch (err) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: error.message })
+      body: JSON.stringify({ error: err.message })
     };
   }
-}
+};

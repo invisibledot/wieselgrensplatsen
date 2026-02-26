@@ -9,6 +9,13 @@ document.addEventListener("DOMContentLoaded", () => {
   let selectedLat = null;
   let selectedLng = null;
 
+  // Layer colors for markers
+  const layerColors = {
+    memories: "red",
+    everyday: "blue",
+    social: "green"
+  };
+
   // ---------- MAP CLICK ----------
   map.on("click", e => {
     selectedLat = e.latlng.lat;
@@ -42,8 +49,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const uploadedPhotos = [];
 
     // ---------- CLOUDINARY UPLOAD ----------
-    const cloudName = "dwhz1sbzs";         // replace
-    const uploadPreset = "unsigned_upload"; // replace
+    const cloudName = "dwhz1sbzs";
+    const uploadPreset = "unsigned_upload”;
 
     try {
       for (const file of photoInput.files) {
@@ -57,16 +64,13 @@ document.addEventListener("DOMContentLoaded", () => {
         );
 
         const result = await res.json();
-        if (result.secure_url) {
-          uploadedPhotos.push({ url: result.secure_url });
-        }
+        if (result.secure_url) uploadedPhotos.push({ url: result.secure_url });
       }
     } catch (err) {
       console.error("Photo upload failed:", err);
       alert("Photo upload failed. You can still submit without photos.");
     }
 
-    // ---------- SUBMIT TO NETLIFY FUNCTION ----------
     const payload = {
       text: textValue,
       layer: layerValue,
@@ -88,17 +92,63 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!response.ok) throw new Error(result.error?.message || "Submission failed");
 
       alert("Thank you — your entry will appear after review.");
-
-      // Reset pin and form
       e.target.reset();
       if (marker) map.removeLayer(marker);
       marker = null;
       selectedLat = null;
       selectedLng = null;
 
+      // Optionally reload entries after submission
+      loadEntries();
+
     } catch (err) {
       console.error(err);
       alert("Submission failed: " + err.message);
     }
   });
+
+  // ---------- LOAD EXISTING ENTRIES ----------
+  async function loadEntries() {
+    try {
+      const res = await fetch("/.netlify/functions/getEntries");
+      const data = await res.json();
+
+      if (!data.entries) return;
+
+      // Optional: clear previous markers if you keep them in an array
+      // For simplicity, just keep adding markers here
+
+      data.entries.forEach(entry => {
+        const lat = entry.fields.Latitude;
+        const lng = entry.fields.Longitude;
+        const text = entry.fields.Text;
+        const photos = entry.fields.Photos || [];
+        const layer = entry.fields.Layer?.[0] || "";
+
+        if (lat && lng) {
+          const color = layerColors[layer] || "gray";
+          const markerIcon = L.icon({
+            iconUrl: `https://chart.googleapis.com/chart?chst=d_map_pin_icon&chld=pin|${color}`,
+            iconSize: [30, 50],
+            iconAnchor: [15, 50],
+            popupAnchor: [0, -50]
+          });
+
+          const m = L.marker([lat, lng], { icon: markerIcon }).addTo(map);
+
+          let popupContent = `<p>${text}</p>`;
+          photos.forEach(p => {
+            popupContent += `<img src="${p.url}" width="100"/>`;
+          });
+
+          m.bindPopup(popupContent);
+        }
+      });
+    } catch (err) {
+      console.error("Failed to load entries:", err);
+    }
+  }
+
+  // Initial load
+  loadEntries();
 });
