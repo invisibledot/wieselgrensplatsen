@@ -14,19 +14,19 @@ let selectedLng = null;
 map.on("click", e => {
   selectedLat = e.latlng.lat;
   selectedLng = e.latlng.lng;
-})
 
-if (marker) {
-  marker.setLatLng(e.latlng);
-} else {
-  marker = L.marker(e.latlng, { draggable: true }).addTo(map);
+  if (marker) {
+    marker.setLatLng(e.latlng);
+  } else {
+    marker = L.marker(e.latlng, { draggable: true }).addTo(map);
 
-  marker.on("dragend", e => {
-    const pos = e.target.getLatLng();
-    selectedLat = pos.lat;
-    selectedLng = pos.lng;
-  });
-}
+    marker.on("dragend", e => {
+      const pos = e.target.getLatLng();
+      selectedLat = pos.lat;
+      selectedLng = pos.lng;
+    });
+  }
+});
 
 // ---------- FORM SUBMISSION ----------
 document
