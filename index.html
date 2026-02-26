@@ -8,38 +8,15 @@
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-sA+7YQiCEqF6TSv7UjvTPO1F7GhiBxFxTOaPzXH6V+I="
-    crossorigin=""
   />
 
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-    }
-    #map {
-      height: 400px;  /* must have fixed height */
-      width: 100%;
-    }
-    .form-container {
-      padding: 1rem;
-      max-width: 600px;
-      margin: auto;
-    }
-    label {
-      display: block;
-      margin-top: 0.5rem;
-    }
-    input, select, button {
-      width: 100%;
-      padding: 0.5rem;
-      margin-top: 0.25rem;
-      box-sizing: border-box;
-    }
-    input#approximate {
-      width:auto;
-    }
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+    #map { height: 400px; width: 100%; }
+    .form-container { padding: 1rem; max-width: 600px; margin: auto; }
+    label { display: block; margin-top: 0.5rem; }
+    input, select, button { width: 100%; padding: 0.5rem; margin-top: 0.25rem; box-sizing: border-box; }
+    input#approximate { width:auto; }
   </style>
 </head>
 <body>
@@ -63,6 +40,7 @@
         <input type="checkbox" id="approximate" /> Approximate location
       </label>
 
+      <!-- NEW PHOTO FIELD -->
       <label for="photos">Upload photos</label>
       <input type="file" id="photos" name="photos" accept="image/*" multiple />
 
@@ -71,14 +49,9 @@
   </div>
 
   <!-- Leaflet JS -->
-  <script
-    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha256-o9N1j6FJ43S+J/Jyfau5bA2g4V1n0DHKf2k6kG7O1cM="
-    crossorigin=""
-    defer
-  ></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
 
-  <!-- Your main JS -->
+  <!-- Main JS -->
   <script src="main.js" defer></script>
 </body>
 </html>
