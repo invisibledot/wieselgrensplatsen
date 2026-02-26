@@ -22,7 +22,7 @@ export async function handler(event) {
         Longitude: data.lng,
         "Approximate location": data.approximate === true,
         Layer: [layerMap[data.layer]],
-        Status: "Approved"
+        Status: "Pending"
       }
     };
 
