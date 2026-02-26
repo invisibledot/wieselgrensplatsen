@@ -14,6 +14,7 @@ let selectedLng = null;
 map.on("click", e => {
   selectedLat = e.latlng.lat;
   selectedLng = e.latlng.lng;
+})
 
 if (marker) {
   marker.setLatLng(e.latlng);
