@@ -37,8 +37,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const photoInput = document.getElementById("photos");
 
     // ---------- Cloudinary setup ----------
-    const cloudName = "YOUR_CLOUD_NAME";         // Replace
-    const uploadPreset = "YOUR_UNSIGNED_PRESET"; // Replace
+    const cloudName = "dwhz1sbzs";         // Replace
+    const uploadPreset = "unsigned_upload"; // Replace
 
     try {
       for (const file of photoInput.files) {
