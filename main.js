@@ -1,12 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
   // ---------- MAP SETUP ----------
   const map = L.map("map").setView([57.7204, 11.9442], 15);
-
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: "&copy; OpenStreetMap contributors"
   }).addTo(map);
 
-  // ---------- PIN STATE ----------
   let marker = null;
   let selectedLat = null;
   let selectedLng = null;
@@ -32,37 +30,36 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
 
     const layerValue = document.getElementById("layer").value;
-    if (!layerValue) {
-      alert("Please select a layer.");
-      return;
-    }
+    if (!layerValue) return alert("Please select a layer.");
+    if (selectedLat === null || selectedLng === null) return alert("Place a pin first.");
 
-    if (selectedLat === null || selectedLng === null) {
-      alert("Please place a pin on the map first.");
-      return;
-    }
-
-    const photoInput = document.getElementById("photos");
     const uploadedPhotos = [];
+    const photoInput = document.getElementById("photos");
 
-    // Upload each photo to Cloudinary
-    for (const file of photoInput.files) {
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("upload_preset", "unsigned_upload"); // replace with your preset
+    // ---------- Cloudinary setup ----------
+    const cloudName = "YOUR_CLOUD_NAME";         // Replace
+    const uploadPreset = "YOUR_UNSIGNED_PRESET"; // Replace
 
-      try {
+    try {
+      for (const file of photoInput.files) {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("upload_preset", uploadPreset);
+
         const uploadResp = await fetch(
-          "https://api.cloudinary.com/v1_1/dwhz1sbzs/image/upload", // replace YOUR_CLOUD_NAME
+          `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
           { method: "POST", body: formData }
         );
+
         const result = await uploadResp.json();
         uploadedPhotos.push({ url: result.secure_url });
-      } catch (err) {
-        console.error("Photo upload failed:", err);
       }
+    } catch (err) {
+      console.error("Photo upload failed:", err);
+      alert("Photo upload failed. You can still submit without photos.");
     }
 
+    // ---------- SUBMIT TO NETLIFY FUNCTION ----------
     const payload = {
       text: document.getElementById("text").value,
       layer: layerValue,
@@ -84,7 +81,6 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!response.ok) throw new Error(result.error?.message || "Submission failed");
 
       alert("Thank you — your entry will appear after review.");
-
       e.target.reset();
       if (marker) map.removeLayer(marker);
       marker = null;
@@ -93,7 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     } catch (err) {
       console.error(err);
-      alert("Something went wrong: " + err.message);
+      alert("Submission failed: " + err.message);
     }
   });
 });

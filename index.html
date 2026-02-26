@@ -19,7 +19,7 @@
       padding: 0;
     }
     #map {
-      height: 400px;
+      height: 400px;  /* must have fixed height */
       width: 100%;
     }
     .form-container {
@@ -36,6 +36,9 @@
       padding: 0.5rem;
       margin-top: 0.25rem;
       box-sizing: border-box;
+    }
+    input#approximate {
+      width:auto;
     }
   </style>
 </head>
@@ -72,8 +75,10 @@
     src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
     integrity="sha256-o9N1j6FJ43S+J/Jyfau5bA2g4V1n0DHKf2k6kG7O1cM="
     crossorigin=""
+    defer
   ></script>
 
-  <script src="main.js"></script>
+  <!-- Your main JS -->
+  <script src="main.js" defer></script>
 </body>
 </html>
