@@ -1,7 +1,4 @@
-// ---------- submitEntry.js ----------
-const fetch = require("node-fetch"); // CommonJS require
-
-module.exports.handler = async function(event) {
+  module.exports.handler = async function(event) {
   if (event.httpMethod !== "POST") {
     return { statusCode: 405, body: "Method Not Allowed" };
   }
@@ -31,16 +28,8 @@ module.exports.handler = async function(event) {
 
     const response = await fetch(
       `https://api.airtable.com/v0/${BASE_ID}/${TABLE_NAME}`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.AIRTABLE_TOKEN}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ records: [record] })
-      }
+      { method: "POST", headers: { Authorization: `Bearer ${process.env.AIRTABLE_TOKEN}`, "Content-Type": "application/json" }, body: JSON.stringify({ records: [record] }) }
     );
-
     const result = await response.json();
 
     if (!response.ok) {
