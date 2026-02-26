@@ -26,29 +26,22 @@ export async function handler(event) {
       }
     };
 
-    const response = await fetch(
-      `https://api.airtable.com/v0/${BASE_ID}/${TABLE_NAME}`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.AIRTABLE_TOKEN}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ records: [record] })
-      }
-    );
+  const response = await fetch(
+    `https://api.airtable.com/v0/${BASE_ID}/${TABLE_NAME}`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.AIRTABLE_TOKEN}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ records: [record] })
+    }
+  );
 
-    const result = await response.json();
+  const text = await response.text();
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ success: true })
-    };
-
-  } catch (error) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: error.message })
-    };
-  }
+  return {
+    statusCode: response.status,
+    body: text
+  };
 }
