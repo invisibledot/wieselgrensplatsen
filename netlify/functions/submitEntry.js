@@ -32,7 +32,7 @@ exports.handler = async function(event) {
 
     // Attach photos if any
     if (data.photos && data.photos.length > 0) {
-      record.fields.Attachments = data.photos.map(p => ({ url: p.url }));
+      record.fields.Photos = data.photos.map(p => ({ url: p.url }));
     }
 
     const resp = await fetch(
