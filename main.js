@@ -19,7 +19,6 @@ map.on("click", e => {
     marker.setLatLng(e.latlng);
   } else {
     marker = L.marker(e.latlng, { draggable: true }).addTo(map);
-
     marker.on("dragend", e => {
       const pos = e.target.getLatLng();
       selectedLat = pos.lat;
@@ -29,43 +28,51 @@ map.on("click", e => {
 });
 
 // ---------- FORM SUBMISSION ----------
-document
-  .getElementById("mapForm")
-  .addEventListener("submit", async e => {
-    e.preventDefault();
+document.getElementById("mapForm").addEventListener("submit", async e => {
+  e.preventDefault();
+
+  const layerValue = document.getElementById("layer").value;
+  if (!layerValue) {
+    alert("Please select a layer.");
+    return;
+  }
 
   if (selectedLat === null || selectedLng === null) {
-      alert("Please place a pin on the map first.");
-      return;
-    }
+    alert("Please place a pin on the map first.");
+    return;
+  }
 
-    const payload = {
-      text: document.getElementById("text").value,
-      layer: document.getElementById("layer").value,
-      approximate: document.getElementById("approximate").checked,
-      lat: selectedLat,
-      lng: selectedLng
-    };
+  const payload = {
+    text: document.getElementById("text").value,
+    layer: layerValue,
+    approximate: document.getElementById("approximate").checked,
+    lat: selectedLat,
+    lng: selectedLng,
+    status: "Pending" // default
+  };
 
-    try {
-      const response = await fetch("/.netlify/functions/submitEntry", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
+  try {
+    const response = await fetch("/.netlify/functions/submitEntry", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
 
-      if (!response.ok) throw new Error("Submission failed");
+    const result = await response.json();
 
-      alert("Thank you — your entry will appear after review.");
+    if (!response.ok) throw new Error(result.error?.message || "Submission failed");
 
-      e.target.reset();
-      if (marker) map.removeLayer(marker);
-      marker = null;
-      selectedLat = null;
-      selectedLng = null;
+    alert("Thank you — your entry will appear after review.");
 
-    } catch (err) {
-      console.error(err);
-      alert("Something went wrong. Please try again.");
-    }
-  });
+    // Reset form and marker
+    e.target.reset();
+    if (marker) map.removeLayer(marker);
+    marker = null;
+    selectedLat = null;
+    selectedLng = null;
+
+  } catch (err) {
+    console.error(err);
+    alert("Something went wrong: " + err.message);
+  }
+});

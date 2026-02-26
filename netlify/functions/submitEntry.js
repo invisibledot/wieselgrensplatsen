@@ -8,13 +8,32 @@ module.exports.handler = async function(event) {
   const TABLE_NAME = "Entries";
 
   const layerMap = {
-    hidden: "recI5CeL4O7d6hOE6",
+    memories: "recI5CeL4O7d6hOE6",
     everyday: "recy14HbZoS3UQrsw",
     social: "rechd3W4jzgCz12uG"
   };
 
+  const validStatuses = ["Pending", "Approved"];
+
   try {
     const data = JSON.parse(event.body);
+
+    // ---------- Validate layer ----------
+    if (!layerMap[data.layer]) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ error: `Invalid layer: ${data.layer}` })
+      };
+    }
+
+    // ---------- Validate Status ----------
+    const status = data.status || "Pending";
+    if (!validStatuses.includes(status)) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ error: `Invalid Status: ${status}` })
+      };
+    }
 
     const record = {
       fields: {
@@ -23,11 +42,11 @@ module.exports.handler = async function(event) {
         Longitude: data.lng,
         "Approximate location": data.approximate === true,
         Layer: [layerMap[data.layer]],
-        Status: "Pending" // Change to "Approved" if you want instant visibility
+        Status: status
       }
     };
 
-    // ---------- Use native fetch ----------
+    // ---------- Send to Airtable using native fetch ----------
     const response = await fetch(
       `https://api.airtable.com/v0/${BASE_ID}/${TABLE_NAME}`,
       {
@@ -42,25 +61,13 @@ module.exports.handler = async function(event) {
 
     const result = await response.json();
 
-    // ---------- Return Airtable error if any ----------
     if (!response.ok) {
-      return {
-        statusCode: response.status,
-        body: JSON.stringify(result)
-      };
+      return { statusCode: response.status, body: JSON.stringify(result) };
     }
 
-    // ---------- Success ----------
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ success: true, id: result.records[0].id })
-    };
+    return { statusCode: 200, body: JSON.stringify({ success: true, id: result.records[0].id }) };
 
   } catch (error) {
-    // ---------- Catch runtime/parsing errors ----------
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: error.message })
-    };
+    return { statusCode: 500, body: JSON.stringify({ error: error.message }) };
   }
 };
