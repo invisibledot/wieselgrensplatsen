@@ -1,10 +1,9 @@
-// ---------- submitEntry.js ----------
 module.exports.handler = async function(event) {
   if (event.httpMethod !== "POST") {
     return { statusCode: 405, body: "Method Not Allowed" };
   }
 
-  const BASE_ID = "appsWnWbbt04jYhN1"; // Airtable Base ID
+  const BASE_ID = "appsWnWbbt04jYhN1";
   const TABLE_NAME = "Entries";
 
   const layerMap = {
@@ -18,21 +17,13 @@ module.exports.handler = async function(event) {
   try {
     const data = JSON.parse(event.body);
 
-    // ---------- Validate layer ----------
     if (!layerMap[data.layer]) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ error: `Invalid layer: ${data.layer}` })
-      };
+      return { statusCode: 400, body: JSON.stringify({ error: `Invalid layer: ${data.layer}` }) };
     }
 
-    // ---------- Validate Status ----------
     const status = data.status || "Pending";
     if (!validStatuses.includes(status)) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ error: `Invalid Status: ${status}` })
-      };
+      return { statusCode: 400, body: JSON.stringify({ error: `Invalid Status: ${status}` }) };
     }
 
     const record = {
@@ -42,11 +33,11 @@ module.exports.handler = async function(event) {
         Longitude: data.lng,
         "Approximate location": data.approximate === true,
         Layer: [layerMap[data.layer]],
-        Status: status
+        Status: status,
+        Photos: data.photos || []
       }
     };
 
-    // ---------- Send to Airtable using native fetch ----------
     const response = await fetch(
       `https://api.airtable.com/v0/${BASE_ID}/${TABLE_NAME}`,
       {
@@ -60,10 +51,7 @@ module.exports.handler = async function(event) {
     );
 
     const result = await response.json();
-
-    if (!response.ok) {
-      return { statusCode: response.status, body: JSON.stringify(result) };
-    }
+    if (!response.ok) return { statusCode: response.status, body: JSON.stringify(result) };
 
     return { statusCode: 200, body: JSON.stringify({ success: true, id: result.records[0].id }) };
 

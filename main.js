@@ -1,4 +1,3 @@
-// main.js
 document.addEventListener("DOMContentLoaded", () => {
   // ---------- MAP SETUP ----------
   const map = L.map("map").setView([57.7204, 11.9442], 15);
@@ -12,7 +11,6 @@ document.addEventListener("DOMContentLoaded", () => {
   let selectedLat = null;
   let selectedLng = null;
 
-  // ---------- MAP CLICK ----------
   map.on("click", e => {
     selectedLat = e.latlng.lat;
     selectedLng = e.latlng.lng;
@@ -44,13 +42,35 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    const photoInput = document.getElementById("photos");
+    const uploadedPhotos = [];
+
+    // Upload each photo to Cloudinary
+    for (const file of photoInput.files) {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", "unsigned_upload"); // replace with your preset
+
+      try {
+        const uploadResp = await fetch(
+          "https://api.cloudinary.com/v1_1/dwhz1sbzs/image/upload", // replace YOUR_CLOUD_NAME
+          { method: "POST", body: formData }
+        );
+        const result = await uploadResp.json();
+        uploadedPhotos.push({ url: result.secure_url });
+      } catch (err) {
+        console.error("Photo upload failed:", err);
+      }
+    }
+
     const payload = {
       text: document.getElementById("text").value,
       layer: layerValue,
       approximate: document.getElementById("approximate").checked,
       lat: selectedLat,
       lng: selectedLng,
-      status: "Pending"
+      status: "Pending",
+      photos: uploadedPhotos
     };
 
     try {
@@ -61,7 +81,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       const result = await response.json();
-
       if (!response.ok) throw new Error(result.error?.message || "Submission failed");
 
       alert("Thank you — your entry will appear after review.");

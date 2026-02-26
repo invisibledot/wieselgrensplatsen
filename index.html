@@ -5,15 +5,12 @@
   <title>Gothenburg Crowdmap</title>
 
   <!-- Leaflet CSS -->
-<link
-  rel="stylesheet"
-  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-/>
-
-<script
-  src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-  defer
-></script>
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-sA+7YQiCEqF6TSv7UjvTPO1F7GhiBxFxTOaPzXH6V+I="
+    crossorigin=""
+  />
 
   <style>
     body {
@@ -63,6 +60,9 @@
         <input type="checkbox" id="approximate" /> Approximate location
       </label>
 
+      <label for="photos">Upload photos</label>
+      <input type="file" id="photos" name="photos" accept="image/*" multiple />
+
       <button type="submit">Submit</button>
     </form>
   </div>
@@ -74,8 +74,6 @@
     crossorigin=""
   ></script>
 
-  <!-- Your main.js -->
   <script src="main.js"></script>
-
 </body>
 </html>
