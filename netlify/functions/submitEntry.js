@@ -1,9 +1,10 @@
-  module.exports.handler = async function(event) {
+// ---------- submitEntry.js ----------
+module.exports.handler = async function(event) {
   if (event.httpMethod !== "POST") {
     return { statusCode: 405, body: "Method Not Allowed" };
   }
 
-  const BASE_ID = "appsWnWbbt04jYhN1";
+  const BASE_ID = "appsWnWbbt04jYhN1"; // Airtable Base ID
   const TABLE_NAME = "Entries";
 
   const layerMap = {
@@ -22,16 +23,26 @@
         Longitude: data.lng,
         "Approximate location": data.approximate === true,
         Layer: [layerMap[data.layer]],
-        Status: "Pending"
+        Status: "Pending" // Change to "Approved" if you want instant visibility
       }
     };
 
+    // ---------- Use native fetch ----------
     const response = await fetch(
       `https://api.airtable.com/v0/${BASE_ID}/${TABLE_NAME}`,
-      { method: "POST", headers: { Authorization: `Bearer ${process.env.AIRTABLE_TOKEN}`, "Content-Type": "application/json" }, body: JSON.stringify({ records: [record] }) }
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${process.env.AIRTABLE_TOKEN}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ records: [record] })
+      }
     );
+
     const result = await response.json();
 
+    // ---------- Return Airtable error if any ----------
     if (!response.ok) {
       return {
         statusCode: response.status,
@@ -39,12 +50,14 @@
       };
     }
 
+    // ---------- Success ----------
     return {
       statusCode: 200,
       body: JSON.stringify({ success: true, id: result.records[0].id })
     };
 
   } catch (error) {
+    // ---------- Catch runtime/parsing errors ----------
     return {
       statusCode: 500,
       body: JSON.stringify({ error: error.message })
