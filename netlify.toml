@@ -3,4 +3,5 @@
   publish = "."
 
 [functions]
+  node_bundler = "esbuild"
   node_runtime = "18"
