@@ -9,13 +9,6 @@ document.addEventListener("DOMContentLoaded", () => {
   let selectedLat = null;
   let selectedLng = null;
 
-  // Layer colors for markers
-  const layerColors = {
-    memories: "red",
-    everyday: "blue",
-    social: "green"
-  };
-
   // ---------- MAP CLICK ----------
   map.on("click", e => {
     selectedLat = e.latlng.lat;
@@ -48,9 +41,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const photoInput = document.getElementById("photos");
     const uploadedPhotos = [];
 
-    // ---------- CLOUDINARY UPLOAD ----------
-    const cloudName = "dwhz1sbzs";
-    const uploadPreset = "unsigned_upload”;
+    const cloudName = "YOUR_CLOUD_NAME";         // replace
+    const uploadPreset = "YOUR_UNSIGNED_PRESET"; // replace
 
     try {
       for (const file of photoInput.files) {
@@ -92,13 +84,14 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!response.ok) throw new Error(result.error?.message || "Submission failed");
 
       alert("Thank you — your entry will appear after review.");
+
       e.target.reset();
       if (marker) map.removeLayer(marker);
       marker = null;
       selectedLat = null;
       selectedLng = null;
 
-      // Optionally reload entries after submission
+      // Reload entries after submission
       loadEntries();
 
     } catch (err) {
@@ -115,30 +108,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (!data.entries) return;
 
-      // Optional: clear previous markers if you keep them in an array
-      // For simplicity, just keep adding markers here
+      // Optional: clear previous markers if you store them
+      // For now, just keep adding new markers
 
       data.entries.forEach(entry => {
         const lat = entry.fields.Latitude;
         const lng = entry.fields.Longitude;
-        const text = entry.fields.Text;
+        const text = entry.fields.Text || "";
         const photos = entry.fields.Photos || [];
-        const layer = entry.fields.Layer?.[0] || "";
 
         if (lat && lng) {
-          const color = layerColors[layer] || "gray";
-          const markerIcon = L.icon({
-            iconUrl: `https://chart.googleapis.com/chart?chst=d_map_pin_icon&chld=pin|${color}`,
-            iconSize: [30, 50],
-            iconAnchor: [15, 50],
-            popupAnchor: [0, -50]
-          });
-
-          const m = L.marker([lat, lng], { icon: markerIcon }).addTo(map);
+          const m = L.marker([lat, lng]).addTo(map);
 
           let popupContent = `<p>${text}</p>`;
           photos.forEach(p => {
-            popupContent += `<img src="${p.url}" width="100"/>`;
+            if (p.url) popupContent += `<img src="${p.url}" width="100"/>`;
           });
 
           m.bindPopup(popupContent);
