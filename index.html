@@ -1,52 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>Community Map</title>
+  <meta charset="UTF-8">
+  <title>Gothenburg Crowdmap</title>
 
+  <!-- Leaflet CSS -->
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
   />
 
   <style>
-    body { margin: 0; font-family: sans-serif; }
-    #map { height: 60vh; }
-    form { padding: 1rem; }
-    textarea, select, button { display: block; width: 100%; margin: 0.5rem 0; }
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+    #map { height: 400px; width: 100%; }
+    .form-container { padding: 1rem; max-width: 600px; margin: auto; }
+    label { display: block; margin-top: 0.5rem; }
+    input, select, button { width: 100%; padding: 0.5rem; margin-top: 0.25rem; box-sizing: border-box; }
+    input#approximate { width:auto; }
   </style>
 </head>
 <body>
 
   <div id="map"></div>
 
-  <form id="mapForm">
-    <textarea
-      id="text"
-      placeholder="What should someone notice here?"
-      required
-    ></textarea>
+  <div class="form-container">
+    <form id="mapForm">
+      <label for="text">Your memory / note</label>
+      <input type="text" id="text" name="text" required />
 
-    <select id="layer" required>
-      <option value="">Choose a layer</option>
-      <option value="memories">Lost Memories</option>
-      <option value="everyday">Everyday Experiences</option>
-      <option value="social">Social Spots</option>
-    </select>
+      <label for="layer">Select a layer</label>
+      <select id="layer" required>
+        <option value="">Choose a layer</option>
+        <option value="memories">Lost Memories</option>
+        <option value="everyday">Everyday Experiences</option>
+        <option value="social">Social Spots</option>
+      </select>
 
-    <label>
-      <input type="checkbox" id="approximate">
-      This location is approximate
-    </label>
+      <label>
+        <input type="checkbox" id="approximate" /> Approximate location
+      </label>
 
-    <button type="submit">Add to map</button>
-  </form>
+      <!-- NEW PHOTO FIELD -->
+      <label for="photos">Upload photos</label>
+      <input type="file" id="photos" name="photos" accept="image/*" multiple />
 
-  <!-- Libraries -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+      <button type="submit">Submit</button>
+    </form>
+  </div>
 
-  <!-- Your frontend code -->
-  <script src="main.js"></script>
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
 
+  <!-- Main JS -->
+  <script src="main.js" defer></script>
 </body>
 </html>
